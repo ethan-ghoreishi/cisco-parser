@@ -1,9 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[9]:
-
-
 from netmiko import ConnectHandler
 import re
 import numpy as np
@@ -15,13 +12,7 @@ import random
 import re
 
 
-# In[10]:
-
-
-device = ConnectHandler(device_type="cisco_ios", ip="172.16.0.10", username="ehsan", password="ehgh1363", secret="ehgh1363")
-
-
-# In[11]:
+device = ConnectHandler(device_type="cisco_ios", ip="", username="", password="", secret="")
 
 
 # identify a numeric range at the end of the command (e.g. <100-200>), convert it to an integer before adding ?
@@ -41,16 +32,6 @@ def genenrate_number_ip(command):
         y = int(command.split(" ")[-1].split('-')[1][:-1]) # extract the upper bound of the range
         random_number = str(random.randint(x,y)) # generate a random number within the range
         return random_number
-
-
-# In[12]:
-
-
-# def cleans_command_output(command):
-#     command[87:].split('\n')[2:-4]
-
-
-# In[13]:
 
 
 device.enable()
@@ -108,10 +89,7 @@ for no_layers in range(3):
                         if counter_2 == len(cmd_desc_1):
                             vars()["conf_terminal_cmd_desc_layer_"+str(counter_1)].append(one_conf_terminal_cmd_desc)                     
 
-
-# In[42]:
-
-
+                            
 def connect_mongodb_database(db_address, db_name, collection_name):
     try:
         myclient = pymongo.MongoClient(db_address) # MongoDB instance running on GC
@@ -131,14 +109,7 @@ def connect_mongodb_database(db_address, db_name, collection_name):
         print("Could not connect to {}".format(db_name)) 
 
 
-# In[46]:
-
-
-db = connect_mongodb_database('mongodb://ehsan:ehgh1363@10.128.0.2:27017/', 'commandsdatabase', 'confcommands')
-
-
-# In[16]:
-
+db = connect_mongodb_database('', 'commandsdatabase', 'confcommands')
 
 # Conver the list to dict to prepare for MongoDB
 
@@ -198,15 +169,9 @@ for i, j in enumerate(conf_terminal_cmd_desc_layer_1):
         list_of_dicts_conf_terminal.append(cmd_dict)
 
 
-# In[49]:
-
-
 # Insert all commands:descriptions into MongoDB
 for i in list_of_dicts_conf_terminal:
     db.confcommands.insert_one(i[0])
-
-
-# In[ ]:
 
 
 
