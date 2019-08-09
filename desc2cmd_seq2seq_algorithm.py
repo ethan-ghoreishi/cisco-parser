@@ -13,14 +13,10 @@ from tensorflow.keras import layers , activations , models , preprocessing, util
 import pandas as pd
 
 from gensim.models.keyedvectors import KeyedVectors
-# import logging
-
-
-# In[8]:
 
 
 try:
-    myclient = pymongo.MongoClient("mongodb://ehsan:ehgh1363@10.128.0.2:27017/") # MongoDB instance running on GC
+    myclient = pymongo.MongoClient("") # MongoDB instance running on GC
     print("Connected successfully!!!") 
 except:   
     print("Could not connect to MongoDB") 
@@ -30,10 +26,6 @@ try:
     print("Connected to DB") 
 except:
     print("Could not connect to DB")   
-# mydb.xeccommands.remove()
-
-
-# In[9]:
 
 
 # import MongoDB xeccommands collection into command and description lists
@@ -53,10 +45,7 @@ for i in mydb.xeccommands.find({}):
 #                 desc_word.append(nltk.word_tokenize(k['d'].lower())[0])
         except KeyError:
             pass
-
-
-# In[11]:
-
+        
 
 # import MongoDB confcommands collection into command and description lists
 
@@ -75,9 +64,6 @@ for i in mydb.confcommands.find({}):
             pass
 
 
-# In[5]:
-
-
 # load word2vec word vectors
 
 # logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
@@ -88,11 +74,6 @@ def getVector(str):
         return word2vec_model[str]
     else:
         return None;
-# def isInModel(str):
-#     return str in word2vec_model
-
-
-# In[6]:
 
 
 tokenizer = preprocessing.text.Tokenizer()
@@ -120,9 +101,6 @@ for word, i in tokenizer.word_index.items():
     if embedding_vector is not None:
         encoder_embedding_matrix[i] = embedding_vector
 print("Encoder embedding shape {}".format( encoder_embedding_matrix.shape ))
-
-
-# In[7]:
 
 
 commands = list()
@@ -156,9 +134,6 @@ for word, i in tokenizer.word_index.items():
 print("Dencoder embedding shape {}".format( decoder_embedding_matrix.shape ))
 
 
-# In[8]:
-
-
 decoder_target_data = list()
 for token_seq in tokenized_cmd_lines:
     decoder_target_data.append( token_seq[ 1 : ] ) 
@@ -167,9 +142,6 @@ padded_cmd_lines = preprocessing.sequence.pad_sequences( decoder_target_data , m
 onehot_cmd_lines = utils.to_categorical( padded_cmd_lines , num_cmd_tokens )
 decoder_target_data = np.array( onehot_cmd_lines )
 print( 'Decoder target data shape -> {}'.format( decoder_target_data.shape ))
-
-
-# In[9]:
 
 
 encoder_inputs = tf.keras.layers.Input(shape=( None , ))
@@ -197,9 +169,6 @@ model.fit([encoder_input_data , decoder_input_data], decoder_target_data, batch_
 model.save( 'model.h5' ) 
 
 
-# In[15]:
-
-
 def make_inference_models():
     
     encoder_model = tf.keras.models.Model(encoder_inputs, encoder_states)
@@ -220,18 +189,12 @@ def make_inference_models():
     return encoder_model , decoder_model
 
 
-# In[16]:
-
-
 def str_to_tokens( sentence : str ):
     words = sentence.lower().split()
     tokens_list = list()
     for word in words:
         tokens_list.append( desc_dict[ word ] ) 
     return preprocessing.sequence.pad_sequences( [tokens_list] , maxlen=max_input_length , padding='post')
-
-
-# In[18]:
 
 
 enc_model , dec_model = make_inference_models()
@@ -266,17 +229,9 @@ for epoch in range( encoder_input_data.shape[0] ):
     print( decoded_translation )
 
 
-# In[ ]:
-
-
 converter = tf.lite.TFLiteConverter.from_keras_model_file( 'model.h5' )
 converter.allow_custom_ops=True
 buffer = converter.convert()
 open( 'model.tflite' , 'wb' ).write( buffer )
-
-
-# In[ ]:
-
-
 
 
