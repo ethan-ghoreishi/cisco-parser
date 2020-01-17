@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
-
 
 import pymongo
 import numpy as np
@@ -13,7 +11,6 @@ from tensorflow.keras import layers , activations , models , preprocessing, util
 import pandas as pd
 
 from gensim.models.keyedvectors import KeyedVectors
-
 
 try:
     myclient = pymongo.MongoClient("") # MongoDB instance running on GC
@@ -29,7 +26,6 @@ except:
 
 
 # import MongoDB xeccommands collection into command and description lists
-
 desc_list = []
 cmd_list = []
 for i in mydb.xeccommands.find({}):
@@ -42,13 +38,11 @@ for i in mydb.xeccommands.find({}):
             for k in j["c2"]:
                 desc_list.append(k["d"])
                 cmd_list.append(k["n"])
-#                 desc_word.append(nltk.word_tokenize(k['d'].lower())[0])
         except KeyError:
             pass
         
 
 # import MongoDB confcommands collection into command and description lists
-
 for i in mydb.confcommands.find({}):
     desc_list.append(i["cmd"]["desc"])
     cmd_list.append(i["cmd"]["name"])
@@ -59,15 +53,11 @@ for i in mydb.confcommands.find({}):
             for k in j["c2"]:
                 desc_list.append(k["d"])
                 cmd_list.append(k["n"])
-#                 desc_word.append(nltk.word_tokenize(k['d'].lower())[0])
         except KeyError:
             pass
 
 
 # load word2vec word vectors
-
-# logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
-# print("loading word2vec model…")
 word2vec_model = KeyedVectors.load_word2vec_format("./data/GoogleNews-vectors-negative300.bin", binary=True)
 def getVector(str):
     if str in word2vec_model:
@@ -160,9 +150,6 @@ model = tf.keras.models.Model([encoder_inputs, decoder_inputs], output )
 model.compile(optimizer=tf.keras.optimizers.Adam(), loss='categorical_crossentropy')
 
 model.summary()
-
-
-# In[ ]:
 
 
 model.fit([encoder_input_data , decoder_input_data], decoder_target_data, batch_size=50, epochs=15 ) 
